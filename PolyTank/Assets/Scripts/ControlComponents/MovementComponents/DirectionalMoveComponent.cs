@@ -11,12 +11,17 @@ public class DirectionalMoveComponent : MonoBehaviour
 
     public Transform model;
     public Camera cam;
-    public float speed = 1;
+    public float minSpeed = 0.5f;
+    public float currentSpeed = 0.5f;
+    public float acceleration = 0.1f;
     public float maxSpeed = 1;
     public float gravity = 1;
     public float turnRate = 0.01f;
     public float reverseTolerance = 1.2f;
+    public float turnTolerance = 1.8f;
+    public float boostAmount = 30;
 
+    Vector3 lastDirection;
     // Start is called before the first frame update
     void Start()
     {
@@ -27,14 +32,15 @@ public class DirectionalMoveComponent : MonoBehaviour
     private void Update()
     {
         model.transform.localPosition = transform.localPosition - new Vector3(0, 1);
+        UpdateRotation();
+        Boost();
     }
 
-    // Update is called once per frame
     void FixedUpdate()
-    {
-        UpdateRotation();
+    {        
         UpdateMovement();
-        
+        RotateModel();
+        AdjustSpeed();
     }
 
     Vector3 move;
@@ -49,18 +55,24 @@ public class DirectionalMoveComponent : MonoBehaviour
 
         move = (camForward * input.Directional.y) + (camRight * input.Directional.x);
         move.Normalize();
+        
         debugMove = move;
+    }
 
+    void RotateModel()
+    {
         if (move.magnitude >= 1f)
         {
             //model.transform.rotation = Quaternion.Slerp(model.transform.rotation, Quaternion.LookRotation(move), turnRate);
             if ((model.transform.forward + move).magnitude > reverseTolerance)
             {
                 model.transform.rotation = Quaternion.RotateTowards(model.transform.rotation, Quaternion.LookRotation(move), turnRate);
+                lastDirection = model.transform.forward;
             }
             else
             {
                 model.transform.rotation = Quaternion.RotateTowards(model.transform.rotation, Quaternion.LookRotation(-move), turnRate);
+                lastDirection = -model.transform.forward;
             }
         }
     }
@@ -69,22 +81,52 @@ public class DirectionalMoveComponent : MonoBehaviour
     public Vector3 debugMove;
     void UpdateMovement()
     {        
-        if(move.magnitude < maxSpeed && move.magnitude > 0)
+        if(move.magnitude > 0)
         {
             if ((model.transform.forward + move).magnitude > reverseTolerance)
             {
-                rb.AddForce(model.transform.forward * speed, ForceMode.VelocityChange);
+                rb.AddForce(model.transform.forward * currentSpeed, ForceMode.VelocityChange);
             }
             else
             {
-                rb.AddForce(model.transform.forward * -speed, ForceMode.VelocityChange);
+                rb.AddForce(model.transform.forward * -currentSpeed, ForceMode.VelocityChange);
             }
         }
         rb.AddForce(Vector3.down * gravity, ForceMode.Acceleration);
 
-        if (rb.velocity.magnitude > maxSpeed)
+        //if (rb.velocity.magnitude > maxSpeed)
+        //{
+        //    rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxSpeed);
+        //}
+    }
+
+    public float vel;
+    void AdjustSpeed()
+    {
+        vel = rb.velocity.magnitude;
+        if ((lastDirection + move).magnitude > turnTolerance)
         {
-            rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxSpeed);
+            if(currentSpeed < maxSpeed)
+            {
+                currentSpeed += acceleration/10;
+            }
+            else
+            {
+                currentSpeed = maxSpeed;
+            }
+        }
+        else
+        {
+            currentSpeed = minSpeed;
+        }
+    }
+
+    void Boost()
+    {
+        if (input.Btn1)
+        {
+            rb.AddForce(model.transform.forward * boostAmount, ForceMode.VelocityChange);
+            Debug.Log(rb.velocity.magnitude);
         }
     }
 
