@@ -61,9 +61,16 @@ public class DirectionalMoveComponent : MonoBehaviour
 
     void RotateModel()
     {
+        Vector3 v = Vector3.zero;
+        if (Physics.Raycast(model.position, -model.transform.up, out RaycastHit hit))
+        {
+            if(hit.transform != transform)
+            {
+                model.rotation = Quaternion.Slerp(model.rotation, Quaternion.FromToRotation(model.transform.up, hit.normal) * model.rotation, 0.1f);
+            }            
+        }
         if (move.magnitude >= 1f)
         {
-            //model.transform.rotation = Quaternion.Slerp(model.transform.rotation, Quaternion.LookRotation(move), turnRate);
             if ((model.transform.forward + move).magnitude > reverseTolerance)
             {
                 model.transform.rotation = Quaternion.RotateTowards(model.transform.rotation, Quaternion.LookRotation(move), turnRate);
