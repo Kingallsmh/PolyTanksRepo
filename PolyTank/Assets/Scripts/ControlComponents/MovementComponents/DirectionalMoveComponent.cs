@@ -61,18 +61,45 @@ public class DirectionalMoveComponent : MonoBehaviour
 
     void RotateModel()
     {
-        Vector3 v = Vector3.zero;
+        Vector3 v = Vector3.up;
         if (Physics.Raycast(model.position, -model.transform.up, out RaycastHit hit))
         {
             if(hit.transform != transform)
             {
-                model.rotation = Quaternion.Slerp(model.rotation, Quaternion.FromToRotation(model.transform.up, hit.normal) * model.rotation, 0.1f);
+                v = hit.normal;
             }            
         }
         if (move.magnitude >= 1f)
         {
+            Vector3 wantedForward = Vector3.Cross(move, v);
             if ((model.transform.forward + move).magnitude > reverseTolerance)
             {
+                
+                model.transform.rotation = Quaternion.RotateTowards(model.transform.rotation, Quaternion.LookRotation(wantedForward), turnRate);
+                lastDirection = model.transform.forward;
+            }
+            else
+            {
+                model.transform.rotation = Quaternion.RotateTowards(model.transform.rotation, Quaternion.LookRotation(-wantedForward), turnRate);
+                lastDirection = -model.transform.forward;
+            }
+        }
+    }
+
+    Quaternion q = Quaternion.identity;
+    void RotateMarioStyle()
+    {        
+        if (Physics.Raycast(model.position, -model.transform.up, out RaycastHit hit))
+        {
+            if (hit.transform != transform)
+            {
+                q = Quaternion.FromToRotation(model.transform.up, hit.normal) * model.rotation;
+            }
+        }
+        if (move.magnitude >= 1f)
+        {
+            if ((model.transform.forward + move).magnitude > reverseTolerance)
+            {                
                 model.transform.rotation = Quaternion.RotateTowards(model.transform.rotation, Quaternion.LookRotation(move), turnRate);
                 lastDirection = model.transform.forward;
             }
