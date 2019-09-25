@@ -906,6 +906,7 @@ GameObject:
   - component: {fileID: 770387997}
   - component: {fileID: 770387996}
   - component: {fileID: 770387995}
+  - component: {fileID: 770387999}
   m_Layer: 0
   m_Name: Engine
   m_TagString: Untagged
@@ -934,7 +935,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 770387993}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: db8a090806ab02a449acb275c3f4855e, type: 3}
   m_Name: 
@@ -994,6 +995,32 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &770387999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 770387993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbfb0ed28db44fc4090fe11d7b8df87f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  model: {fileID: 393655987}
+  cam: {fileID: 963194227}
+  minSpeed: 0.5
+  currentSpeed: 0.5
+  acceleration: 0.02
+  maxSpeed: 5
+  gravity: 7
+  turnRate: 2
+  reverseTolerance: 1.25
+  turnTolerance: 1.7
+  boostAmount: 20
+  debugMove: {x: 0, y: 0, z: 0}
+  debugmove2: {x: 0, y: 0, z: 0}
+  vel: 0
 --- !u!1 &816067775 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100000, guid: d9752aa6df3d5c84fbcd5872ca4a4e7c,
