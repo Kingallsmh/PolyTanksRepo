@@ -65,8 +65,7 @@ public class DirectionalMoveComponentNew : MonoBehaviour
             {
                 model.rotation = Quaternion.FromToRotation(model.up, hit.normal) * model.rotation;
             }            
-        }
-        
+        }        
     }
 
 
